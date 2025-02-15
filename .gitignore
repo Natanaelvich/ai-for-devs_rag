@@ -34,3 +34,9 @@ ENV/
 # Sistema operacional
 .DS_Store
 Thumbs.db 
+
+# Arquivos de configuração
+.env
+
+# Database Chroma
+text_index/
