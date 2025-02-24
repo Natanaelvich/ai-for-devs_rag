@@ -1,0 +1,120 @@
+@baseUrl = http://localhost:5000
+@contentType = application/json
+
+### Variables for different environments
+# @name setEnv
+@prod_url = https://your-production-url
+@dev_url = http://localhost:5000
+
+### Health Check
+GET {{baseUrl}}/api/health
+Accept: application/json
+
+### Query using rerank method (default)
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "Quais os principais riscos do marco legal de ia?"
+}
+
+### Query using parent document method
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "Quais os principais riscos do marco legal de ia?",
+    "method": "parent"
+}
+
+### Query with empty question (should return 400)
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": ""
+}
+
+### Query without question field (should return 400)
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "invalid_field": "test"
+}
+
+### Query with invalid method (should return error)
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "Quais os principais riscos do marco legal de ia?",
+    "method": "invalid_method"
+}
+
+### Long complex query using rerank
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "Explique detalhadamente como o marco legal de IA aborda questões de privacidade e proteção de dados pessoais, incluindo as principais salvaguardas e requisitos estabelecidos."
+}
+
+### Technical implementation query using parent method
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "Quais são os requisitos técnicos e de governança que as empresas precisam implementar para estar em conformidade com o marco legal de IA?",
+    "method": "parent"
+}
+
+### Query about specific sections
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "O que o marco legal de IA diz especificamente sobre sistemas de IA de alto risco? Quais são as obrigações específicas para esses sistemas?"
+}
+
+### Performance test - Multiple requests
+# @name batchQueries
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "Resumo dos principais pontos do marco legal de IA"
+}
+
+###
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "Definição de IA segundo o marco legal",
+    "method": "parent"
+}
+
+###
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "Sanções e penalidades previstas no marco legal de IA"
+}
+
+### Test with special characters
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "Como o marco legal trata questões de ética em IA? (análise específica do artigo/seção)"
+}
+
+### Test with markdown formatting
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "Liste em formato markdown:\n- Principais direitos dos usuários\n- Obrigações das empresas\n- Papel dos órgãos reguladores"
+} 
