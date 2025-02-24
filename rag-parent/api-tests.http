@@ -10,6 +10,47 @@
 GET {{baseUrl}}/api/health
 Accept: application/json
 
+### Add new documents to RAG
+# @name uploadDocuments
+POST {{baseUrl}}/api/documents
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="sample1.pdf"
+Content-Type: application/pdf
+
+< ./DOC-SF238339076816-20230503.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Add multiple documents to RAG
+# @name uploadMultipleDocuments
+POST {{baseUrl}}/api/documents
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="doc1.pdf"
+Content-Type: application/pdf
+
+< ./DOC-SF238339076816-20230503.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="doc2.pdf"
+Content-Type: application/pdf
+
+< ./DOC-SF238339076816-20230503.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Try to add invalid file type (should fail)
+# @name uploadInvalidFile
+POST {{baseUrl}}/api/documents
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="test.txt"
+Content-Type: text/plain
+
+This is a test file content
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
 ### Query using rerank method (default)
 POST {{baseUrl}}/api/query
 Content-Type: {{contentType}}

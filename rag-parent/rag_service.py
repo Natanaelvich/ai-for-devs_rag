@@ -9,6 +9,8 @@ from langchain.retrievers import ParentDocumentRetriever
 from langchain.storage import InMemoryByteStore
 from langchain.retrievers.contextual_compression import ContextualCompressionRetriever
 from langchain_cohere import CohereRerank
+import os
+from typing import List
 
 class RAGService:
     def __init__(self):
@@ -112,4 +114,55 @@ class RAGService:
         elif method == "parent":
             return self.parent_chain.invoke(question)
         else:
-            raise ValueError("Invalid method. Use 'rerank' or 'parent'.") 
+            raise ValueError("Invalid method. Use 'rerank' or 'parent'.")
+
+    def add_documents(self, file_paths: List[str], allowed_extensions: List[str] = ['.pdf']) -> dict:
+        """
+        Add new documents to both vector stores.
+        
+        Args:
+            file_paths (List[str]): List of paths to the documents to be added
+            allowed_extensions (List[str]): List of allowed file extensions
+            
+        Returns:
+            dict: Status of the operation with details about processed files
+        """
+        processed_files = []
+        failed_files = []
+        
+        for file_path in file_paths:
+            try:
+                # Validate file extension
+                _, ext = os.path.splitext(file_path)
+                if ext.lower() not in allowed_extensions:
+                    failed_files.append({
+                        "file": file_path,
+                        "error": f"Unsupported file type. Allowed types: {', '.join(allowed_extensions)}"
+                    })
+                    continue
+
+                # Load and process document
+                loader = PyPDFLoader(file_path, extract_images=False)
+                pages = loader.load_and_split()
+
+                # Add to naive vector store
+                self.naive_vectordb.add_documents(pages)
+                
+                # Add to parent document store
+                self.parent_retriever.add_documents(pages)
+                
+                processed_files.append(file_path)
+                
+            except Exception as e:
+                failed_files.append({
+                    "file": file_path,
+                    "error": str(e)
+                })
+        
+        return {
+            "status": "completed",
+            "processed_files": processed_files,
+            "failed_files": failed_files,
+            "total_processed": len(processed_files),
+            "total_failed": len(failed_files)
+        } 
