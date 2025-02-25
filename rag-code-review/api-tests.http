@@ -1,0 +1,125 @@
+@baseUrl = http://localhost:5001
+@contentType = application/json
+
+### Variables for different environments
+# @name setEnv
+@prod_url = https://your-production-url
+@dev_url = http://localhost:5001
+
+### Health Check
+GET {{baseUrl}}/api/health
+Accept: application/json
+
+### Add a GitHub repository for code review
+# @name addRepository
+POST {{baseUrl}}/api/repository
+Content-Type: {{contentType}}
+
+{
+    "repository_url": "https://github.com/Natanaelvich/ai-for-devs_rag",
+    "branch": "main"
+}
+
+### Add code files for review
+# @name uploadCodeFiles
+POST {{baseUrl}}/api/code
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="example.py"
+Content-Type: text/x-python
+
+def hello_world():
+    print("Hello, World!")
+    
+if __name__ == "__main__":
+    hello_world()
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Add multiple code files for review
+# @name uploadMultipleCodeFiles
+POST {{baseUrl}}/api/code
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="example1.py"
+Content-Type: text/x-python
+
+def add(a, b):
+    return a + b
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="example2.js"
+Content-Type: application/javascript
+
+function subtract(a, b) {
+    return a - b;
+}
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Try to add invalid file type (should fail)
+# @name uploadInvalidFile
+POST {{baseUrl}}/api/code
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="test.txt"
+Content-Type: text/plain
+
+This is a test file content
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Request code review
+POST {{baseUrl}}/api/review
+Content-Type: {{contentType}}
+
+{
+    "question": "Você pode revisar e sugerir melhorias para o código?"
+}
+
+### Request specific code review
+POST {{baseUrl}}/api/review
+Content-Type: {{contentType}}
+
+{
+    "question": "Identifique possíveis problemas de segurança no código"
+}
+
+### Request performance improvement suggestions
+POST {{baseUrl}}/api/review
+Content-Type: {{contentType}}
+
+{
+    "question": "Como posso melhorar a performance deste código?"
+}
+
+### Request code architecture review
+POST {{baseUrl}}/api/review
+Content-Type: {{contentType}}
+
+{
+    "question": "Avalie a arquitetura do código e sugira melhorias na organização"
+}
+
+### Request best practices review
+POST {{baseUrl}}/api/review
+Content-Type: {{contentType}}
+
+{
+    "question": "O código segue as melhores práticas? O que poderia ser melhorado?"
+}
+
+### Request with empty question (should return 400)
+POST {{baseUrl}}/api/review
+Content-Type: {{contentType}}
+
+{
+    "question": ""
+}
+
+### Request without question field (should return 400)
+POST {{baseUrl}}/api/review
+Content-Type: {{contentType}}
+
+{
+    "invalid_field": "test"
+} 
