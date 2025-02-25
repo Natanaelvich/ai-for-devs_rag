@@ -1,0 +1,108 @@
+@baseUrl = http://localhost:5002
+@contentType = application/json
+
+### Variables for different environments
+# @name setEnv
+@prod_url = https://your-production-url
+@dev_url = http://localhost:5002
+
+### Health Check
+GET {{baseUrl}}/api/health
+Accept: application/json
+
+### Add new PDF document
+# @name uploadDocument
+POST {{baseUrl}}/api/documents
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="sample.pdf"
+Content-Type: application/pdf
+
+< ./DOC-SF238339076816-20230503.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Add multiple PDF documents
+# @name uploadMultipleDocuments
+POST {{baseUrl}}/api/documents
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="doc1.pdf"
+Content-Type: application/pdf
+
+< ./DOC-SF238339076816-20230503.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="doc2.pdf"
+Content-Type: application/pdf
+
+< ./DOC-SF238339076816-20230503.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Try to add invalid file type (should fail)
+# @name uploadInvalidFile
+POST {{baseUrl}}/api/documents
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="test.txt"
+Content-Type: text/plain
+
+This is a test file content
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Query PDF document
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "Quais os principais riscos do marco legal de ia?"
+}
+
+### Query about specific sections
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "O que o marco legal de IA diz sobre sistemas de IA de alto risco?"
+}
+
+### Query about definitions
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "Como o marco legal define inteligência artificial?"
+}
+
+### Query about compliance
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "Quais são os requisitos de conformidade para empresas que utilizam IA?"
+}
+
+### Query about penalties
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": "Quais são as penalidades previstas para violações do marco legal de IA?"
+}
+
+### Query with empty question (should return 400)
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "question": ""
+}
+
+### Query without question field (should return 400)
+POST {{baseUrl}}/api/query
+Content-Type: {{contentType}}
+
+{
+    "invalid_field": "test"
+} 
